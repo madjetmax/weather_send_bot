@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    command: python -m bot.main
+    depends_on:
+      pg:
+        condition: service_healthy
+    environment:
+      REDIS_CLIENT_HOST: redis
+      REDIS_CLIENT_PORT: 6379
+      DB_HOST: pg
+
+    volumes: 
+      - ./app:/bot
+
+  taskiq-worker:
+    build: .
+    command: taskiq worker bot.tasks.broker:broker
+    depends_on:
+      - redis
+    environment:
+      REDIS_CLIENT_HOST: redis
+      REDIS_CLIENT_PORT: 6379
+    volumes:
+      - ./app:/bot
+
+  taskiq-scheduler:
+    build: .
+    command: taskiq scheduler bot.tasks.broker:scheduler --skip-first-run
+    depends_on:
+      - redis
+    environment:
+      REDIS_CLIENT_HOST: redis
+      REDIS_CLIENT_PORT: 6379
+    volumes:
+      - ./app:/bot
+  
+  pg:
+    image: postgres:16.4
+    environment:
+      POSTGRES_DB: weather_bot_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    volumes:
+        - pg_data:/var/lib/postgresql/data/
+  
+    ports:
+      - "5432:5432"
+
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "weather_bot_db", "-U", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      
+    ports:
+      - "5050:80"
+    depends_on:
+      pg:
+        condition: service_healthy
+
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+volumes:
+    pg_data: 

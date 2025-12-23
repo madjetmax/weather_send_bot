@@ -1,0 +1,10 @@
+__pycache__/
+venv
+
+.env
+
+bot/alembic.ini
+bot/migrations
+
+*.db
+bot/tests.py
