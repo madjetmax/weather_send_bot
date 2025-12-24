@@ -3,7 +3,6 @@ version: '3.8'
 services:
   bot:
     build: .
-    command: python -m bot.main
     depends_on:
       pg:
         condition: service_healthy
@@ -11,6 +10,7 @@ services:
       REDIS_CLIENT_HOST: redis
       REDIS_CLIENT_PORT: 6379
       DB_HOST: pg
+    command: python -m bot.main
 
     volumes: 
       - ./app:/bot
@@ -23,6 +23,7 @@ services:
     environment:
       REDIS_CLIENT_HOST: redis
       REDIS_CLIENT_PORT: 6379
+      DB_HOST: pg
     volumes:
       - ./app:/bot
 
@@ -34,6 +35,7 @@ services:
     environment:
       REDIS_CLIENT_HOST: redis
       REDIS_CLIENT_PORT: 6379
+      DB_HOST: pg
     volumes:
       - ./app:/bot
   
@@ -47,7 +49,7 @@ services:
         - pg_data:/var/lib/postgresql/data/
   
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "weather_bot_db", "-U", "postgres" ]

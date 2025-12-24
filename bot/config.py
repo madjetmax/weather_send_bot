@@ -21,7 +21,6 @@ DB_NAME=os.getenv("DB_NAME")
 
 DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-
 # redis client
 REDIS_CLIENT_HOST = os.getenv("REDIS_CLIENT_HOST")
 REDIS_CLIENT_PORT = os.getenv("REDIS_CLIENT_PORT")

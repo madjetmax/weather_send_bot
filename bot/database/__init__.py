@@ -8,16 +8,12 @@ from datetime import datetime
 
 # * users
 async def create_user(session: AsyncSession, **data: dict) -> bool:
-    try:
-        user = User(
-            **data
-        )
-        session.add(user)
-        await session.commit()
+    user = User(
+        **data
+    )
+    session.add(user)
+    await session.commit()
 
-        return True
-    except:
-        return False
 
 async def get_user(session: AsyncSession, user_id: int) -> User | None:
     query = select(User).filter_by(id=user_id)
@@ -26,6 +22,8 @@ async def get_user(session: AsyncSession, user_id: int) -> User | None:
     return user
     
 async def update_user(session: AsyncSession, user_id: int, **new_data: dict):
+    await session.rollback()
+
     query = (
         update(User)
         .filter_by(id=user_id)
