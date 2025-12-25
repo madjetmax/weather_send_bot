@@ -28,8 +28,15 @@ async def main():
 
     # await redis_client.flushall(True)
 
+    # tasks
     await tasks_broker.broker.startup()
-    await tasks_broker.show_all_schedules()
+
+    responces_send_task = await tasks.send_responces_time.schedule_by_cron(
+        source=tasks_broker.schedule_source,
+        cron=f"*/{RESPONCES_TIME_TASK_SEND_INTERVAL} * * * *",
+    )
+
+    # await tasks_broker.show_all_schedules()
     # await tasks_broker.delete_all_schedules()
 
     now = datetime.now()

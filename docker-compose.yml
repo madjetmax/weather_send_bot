@@ -10,6 +10,7 @@ services:
       REDIS_CLIENT_HOST: redis
       REDIS_CLIENT_PORT: 6379
       DB_HOST: pg
+
     command: python -m bot.main
 
     volumes: 
@@ -24,6 +25,7 @@ services:
       REDIS_CLIENT_HOST: redis
       REDIS_CLIENT_PORT: 6379
       DB_HOST: pg
+
     volumes:
       - ./app:/bot
 

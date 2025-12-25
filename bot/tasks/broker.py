@@ -30,7 +30,6 @@ taskiq_aiogram.init(
 schedule_source = ListRedisScheduleSource(
     url=redis_url
 )
-schedule_source.add_schedule
 
 scheduler = TaskiqScheduler(broker=broker, sources=[schedule_source])
 # ! run:  taskiq scheduler bot.tasks.broker:scheduler --skip-first-run

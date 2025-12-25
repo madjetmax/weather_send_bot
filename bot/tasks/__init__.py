@@ -1,5 +1,6 @@
-from typing import Annotated
+from typing import Annotated, Awaitable, Any
 from datetime import datetime, timedelta
+from time import perf_counter
 
 from taskiq import TaskiqDepends, Context
 from aiogram import Bot
@@ -11,6 +12,7 @@ from bot import redis_client
 
 from bot.weather_parse import get_future_weather
 from bot import texts
+from bot.config import ADMIN_ID, RESPONCES_TIME_TASK_SEND_INTERVAL
 
 
 @tasks_broker.broker.task
@@ -27,7 +29,7 @@ async def send_weather_to_user(user_id: int, context: Annotated[Context, TaskiqD
         # check schedule
         schedule_exists = await tasks_broker.check_schedule(schedule_id)
 
-        await bot.send_message(user_id, str(schedule_exists) + " " + schedule_id)
+        # await bot.send_message(user_id, str(schedule_exists) + " " + schedule_id)
 
         if not schedule_exists:
             return
@@ -82,3 +84,35 @@ async def send_weather_to_user(user_id: int, context: Annotated[Context, TaskiqD
             lat=user_location["lat"],
             long=user_location["long"],
         )
+
+async def get_coroutine_run_time(coro: Awaitable[Any]) -> float:
+    start_time = perf_counter()
+    await coro
+    return perf_counter() - start_time
+
+@tasks_broker.broker.task
+async def send_responces_time(bot: Bot = TaskiqDepends()):
+    # * send empty request
+    # redis
+    redis_time = await get_coroutine_run_time(
+        redis_client.get_data("")
+    )
+    
+    # database
+    async with db_session() as session:
+        db_time = await get_coroutine_run_time(
+            db.get_user(session, ADMIN_ID)
+        )
+    
+    # weather api
+    wth_api_time = await get_coroutine_run_time(
+        get_future_weather(1, 1)
+    )
+
+    # get text and send to admin
+    text = texts.responces_time_text.format(
+        redis=redis_time,
+        db=db_time,
+        weather_api=wth_api_time,
+    )
+    await bot.send_message(ADMIN_ID, text, parse_mode="HTML")

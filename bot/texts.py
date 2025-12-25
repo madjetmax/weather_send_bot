@@ -14,3 +14,10 @@ humidity: {humidity}
 wind speed: {wind_speed}km/h
 visibility: {visibility}
 """
+
+responces_time_text = """
+<strong>Responces time</strong>
+redis: {redis}
+db: {db}
+wether api: {weather_api}
+"""
