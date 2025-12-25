@@ -115,4 +115,4 @@ async def send_responces_time(bot: Bot = TaskiqDepends()):
         db=db_time,
         weather_api=wth_api_time,
     )
-    await bot.send_message(ADMIN_ID, text, parse_mode="HTML")
+    await bot.send_message(ADMIN_ID, text, parse_mode="HTML", disable_notification=True)

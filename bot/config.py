@@ -6,7 +6,7 @@ load_dotenv()
 # bot
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
-RESPONCES_TIME_TASK_SEND_INTERVAL = 1 # minutes
+RESPONCES_TIME_TASK_SEND_INTERVAL = 10 # minutes
 
 # weather api
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
