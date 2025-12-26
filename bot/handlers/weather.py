@@ -37,10 +37,12 @@ async def send_weather_message(message: Message, weather_data: dict):
         temp_feels_like=weather_data["main"]["feels_like"],
         max_temp=weather_data["main"]["temp_max"],
         min_temp=weather_data["main"]["temp_min"],
-        humidity=weather_data["main"]["humidity"],
+
+        humidity=weather_data["main"].get("humidity", 100),
         wind_speed=weather_data["wind"]["speed"],
-        visibility=weather_data["visibility"]
+        visibility=weather_data.get("visibility", "visible")
     )
+    
     await message.answer(text, parse_mode="HTML")
 
 @router.message(CommandStart())
