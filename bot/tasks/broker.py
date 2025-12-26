@@ -1,12 +1,14 @@
-import asyncio
 from typing import Annotated
+import asyncio
 from datetime import datetime, timedelta
+
 from taskiq_redis import RedisAsyncResultBackend, RedisStreamBroker, ListRedisScheduleSource, RedisScheduleSource
 from taskiq import TaskiqScheduler, Context, TaskiqDepends
-from bot import redis_client
+from taskiq.schedule_sources import LabelScheduleSource
 from redis.asyncio import Redis, BlockingConnectionPool
-
 import taskiq_aiogram
+
+from bot import redis_client
 
 from bot.config import REDIS_CLIENT_HOST, REDIS_CLIENT_PORT, REDIS_CLIENT_DB
 
@@ -33,6 +35,13 @@ schedule_source = ListRedisScheduleSource(
 
 scheduler = TaskiqScheduler(broker=broker, sources=[schedule_source])
 # ! run:  taskiq scheduler bot.tasks.broker:scheduler --skip-first-run
+
+static_tasks_scheduler = TaskiqScheduler(
+    broker=broker,
+    sources=[LabelScheduleSource(broker)],
+)
+# ! run:  taskiq scheduler bot.tasks.broker:static_tasks_scheduler --skip-first-run 
+
 
 async def delete_schedule(id_: str):
     print(id_)

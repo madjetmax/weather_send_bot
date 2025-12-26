@@ -25,31 +25,17 @@ dp.include_routers(
 )
 
 async def main():
-
     # await redis_client.flushall(True)
 
     # tasks
     await tasks_broker.broker.startup()
 
-    responces_send_task = await tasks.send_responces_time.schedule_by_cron(
-        source=tasks_broker.schedule_source,
-        cron=f"*/{RESPONCES_TIME_TASK_SEND_INTERVAL} * * * *",
-    )
-
-    # await tasks_broker.show_all_schedules()
+    await tasks_broker.show_all_schedules()
     # await tasks_broker.delete_all_schedules()
 
     now = datetime.now()
     print("scheduled", now)
 
-    # task = await tasks.send_weather_to_user.schedule_by_cron(
-    #     source=tasks_broker.schedule_source,
-    #     cron=f"*/{WEATHER_TASK_SEND_INTERVAL} * * * *",
-    #     user_id=859261869 
-    # )
-    # print(task)
-    
-    
     await db.engine.begin_db()
 
     print('bot launched')

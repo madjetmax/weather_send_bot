@@ -40,6 +40,18 @@ services:
       DB_HOST: pg
     volumes:
       - ./app:/bot
+
+  taskiq-static-scheduler:
+    build: .
+    command: taskiq scheduler bot.tasks.broker:static_tasks_scheduler --skip-first-run
+    depends_on:
+      - redis
+    environment:
+      REDIS_CLIENT_HOST: redis
+      REDIS_CLIENT_PORT: 6379
+      DB_HOST: pg
+    volumes:
+      - ./app:/bot
   
   pg:
     image: postgres:16.4
