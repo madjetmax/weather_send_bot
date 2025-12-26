@@ -29,7 +29,7 @@ async def send_weather_to_user(user_id: int, context: Annotated[Context, TaskiqD
         # check schedule
         schedule_exists = await tasks_broker.check_schedule(schedule_id)
 
-        # await bot.send_message(user_id, str(schedule_exists) + " " + schedule_id)
+        await bot.send_message(user_id, str(schedule_exists) + " " + schedule_id)
 
         if not schedule_exists:
             return

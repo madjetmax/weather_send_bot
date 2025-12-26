@@ -6,7 +6,7 @@ load_dotenv()
 # bot
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
-RESPONCES_TIME_TASK_SEND_INTERVAL = 10 # minutes
+RESPONCES_TIME_TASK_SEND_INTERVAL = 5 # minutes
 
 # weather api
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
@@ -31,4 +31,4 @@ REDIS_CLIENT_DB = os.getenv("REDIS_CLIENT_DB")
 REDIS_USER_LOCATION_EXPIRE_TIME = 1 # hours
 
 # taskiq
-WEATHER_TASK_SEND_INTERVAL = 10 # minutes
+WEATHER_TASK_SEND_INTERVAL = 5 # minutes
