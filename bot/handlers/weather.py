@@ -77,7 +77,7 @@ async def get_user_location(message: Message, state: FSMContext, db_session: Asy
     }
 
     # set location to redis
-    expire_time = timedelta(minutes=2)
+    expire_time = timedelta(hours=REDIS_USER_LOCATION_EXPIRE_TIME)
     await redis_client.set_data(
         f"{user_id}_location", update_data,
         expire_time

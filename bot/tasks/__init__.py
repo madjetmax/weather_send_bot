@@ -90,7 +90,7 @@ async def get_coroutine_run_time(coro: Awaitable[Any]) -> float:
     await coro
     return perf_counter() - start_time
 
-@tasks_broker.broker.task(schedule=[{"cron": "*/1 * * * *"}])
+@tasks_broker.broker.task(schedule=[{"cron": f"*/{RESPONCES_TIME_TASK_SEND_INTERVAL} * * * *"}])
 async def send_responces_time(bot: Bot = TaskiqDepends()):
     # * send empty request
     # redis
@@ -117,5 +117,3 @@ async def send_responces_time(bot: Bot = TaskiqDepends()):
     )
     await bot.send_message(ADMIN_ID, text, parse_mode="HTML", disable_notification=True)
 
-
-# * help tasks
