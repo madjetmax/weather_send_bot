@@ -17,6 +17,8 @@ from bot.config import ADMIN_ID, RESPONCES_TIME_TASK_SEND_INTERVAL
 
 @tasks_broker.broker.task
 async def send_weather_to_user(start_seconds: int, user_id: int, context: Annotated[Context, TaskiqDepends()], bot: Bot = TaskiqDepends(), ):
+    schedule_id = context.message.labels["schedule_id"]
+
     now = datetime.now()
     print("ran", now, context.message.labels)
 
@@ -24,13 +26,12 @@ async def send_weather_to_user(start_seconds: int, user_id: int, context: Annota
 
     # get location data in redis
     user_location = await redis_client.get_data(f"{user_id}_location")
-    
+
     # get schedule exists
     schedule_exists = await tasks_broker.check_schedule(schedule_id)
     await bot.send_message(user_id, str(schedule_exists) + " " + schedule_id)
     
     if user_location is None:
-        schedule_id = context.message.labels["schedule_id"]
 
         # check schedule
         if not schedule_exists:
