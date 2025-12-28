@@ -23,7 +23,7 @@ async def send_weather_to_user(start_seconds: int, user_id: int, context: Annota
     # print("ran", now, context.message.labels)
 
     text = f"{(time() - start_seconds) / 60}_{schedule_id}"
-    await bot.send_message(user_id, text)
+    await bot.send_message(user_id, text, disable_notification=True)
 
     # # get location data in redis
     # user_location = await redis_client.get_data(f"{user_id}_location")
