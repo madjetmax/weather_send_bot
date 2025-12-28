@@ -19,75 +19,76 @@ from bot.config import ADMIN_ID, RESPONCES_TIME_TASK_SEND_INTERVAL
 async def send_weather_to_user(start_seconds: int, user_id: int, context: Annotated[Context, TaskiqDepends()], bot: Bot = TaskiqDepends(), ):
     schedule_id = context.message.labels["schedule_id"]
 
-    now = datetime.now()
-    print("ran", now, context.message.labels)
+    # now = datetime.now()
+    # print("ran", now, context.message.labels)
 
-    await bot.send_message(user_id, str((time() - start_seconds) / 60))
+    text = f"{(time() - start_seconds) / 60}_{schedule_id}"
+    await bot.send_message(user_id, text)
 
-    # get location data in redis
-    user_location = await redis_client.get_data(f"{user_id}_location")
+    # # get location data in redis
+    # user_location = await redis_client.get_data(f"{user_id}_location")
 
-    # get schedule exists
-    schedule_exists = await tasks_broker.check_schedule(schedule_id)
-    await bot.send_message(user_id, str(schedule_exists) + " " + schedule_id)
+    # # get schedule exists
+    # schedule_exists = await tasks_broker.check_schedule(schedule_id)
+    # await bot.send_message(user_id, str(schedule_exists) + " " + schedule_id)
     
-    if user_location is None:
+    # if user_location is None:
 
-        # check schedule
-        if not schedule_exists:
-            return
+    #     # check schedule
+    #     if not schedule_exists:
+    #         return
 
-        # send message
-        await bot.send_message(user_id, "Couldn't get you location, /start to send it again")
+    #     # send message
+    #     await bot.send_message(user_id, "Couldn't get you location, /start to send it again")
 
-        # remove schedule
-        await tasks_broker.delete_schedule(schedule_id)
-        return
+    #     # remove schedule
+    #     await tasks_broker.delete_schedule(schedule_id)
+    #     return
 
-    # get weather data
-    weather_data = await get_future_weather(user_location["lat"], user_location["long"])
+    # # get weather data
+    # weather_data = await get_future_weather(user_location["lat"], user_location["long"])
 
-    # get time
-    hours, minutes, _ = weather_data["dt_txt"].split(" ")[-1].split(":")
+    # # get time
+    # hours, minutes, _ = weather_data["dt_txt"].split(" ")[-1].split(":")
 
-    text = texts.weater_text.format(
-        time=f"{hours}:{minutes}",
-        name=weather_data["weather"][0]["main"],
-        temp=weather_data["main"]["temp"],
-        temp_feels_like=weather_data["main"]["feels_like"],
-        max_temp=weather_data["main"]["temp_max"],
-        min_temp=weather_data["main"]["temp_min"],
+    # text = texts.weater_text.format(
+    #     time=f"{hours}:{minutes}",
+    #     name=weather_data["weather"][0]["main"],
+    #     temp=weather_data["main"]["temp"],
+    #     temp_feels_like=weather_data["main"]["feels_like"],
+    #     max_temp=weather_data["main"]["temp_max"],
+    #     min_temp=weather_data["main"]["temp_min"],
 
-        humidity=weather_data["main"].get("humidity", 100),
-        wind_speed=weather_data["wind"]["speed"],
-        visibility=weather_data.get("visibility", "visible")
-    )
-    await bot.send_message(user_id, text, parse_mode="HTML")
+    #     humidity=weather_data["main"].get("humidity", 100),
+    #     wind_speed=weather_data["wind"]["speed"],
+    #     visibility=weather_data.get("visibility", "visible")
+    # )
+    # await bot.send_message(user_id, text, parse_mode="HTML")
     
-    # create weather log 
-    year, month, day = weather_data["dt_txt"].split(" ")[0].split("-")
-    date = datetime(
-        int(year), int(month), int(day), int(hours), int(minutes)
-    )
-    async with db_session() as session:
-        await db.create_weather_log(
-            session,
-            date=date, 
-            name=weather_data["weather"][0]["main"],
+    # # create weather log 
+    # year, month, day = weather_data["dt_txt"].split(" ")[0].split("-")
+    # date = datetime(
+    #     int(year), int(month), int(day), int(hours), int(minutes)
+    # )
+    # async with db_session() as session:
+    #     await db.create_weather_log(
+    #         session,
+    #         date=date, 
+    #         name=weather_data["weather"][0]["main"],
 
-            temperature=weather_data["main"]["temp"],
-            temp_feels_like=weather_data["main"]["feels_like"],
-            max_temp=weather_data["main"]["temp_max"],
-            min_temp=weather_data["main"]["temp_min"],
+    #         temperature=weather_data["main"]["temp"],
+    #         temp_feels_like=weather_data["main"]["feels_like"],
+    #         max_temp=weather_data["main"]["temp_max"],
+    #         min_temp=weather_data["main"]["temp_min"],
             
-            wind_speed=weather_data["wind"]["speed"],
+    #         wind_speed=weather_data["wind"]["speed"],
 
-            humidity=weather_data["main"]["humidity"],
-            visibility=weather_data["visibility"],
+    #         humidity=weather_data["main"]["humidity"],
+    #         visibility=weather_data["visibility"],
 
-            lat=user_location["lat"],
-            long=user_location["long"],
-        )
+    #         lat=user_location["lat"],
+    #         long=user_location["long"],
+    #     )
 
 async def get_coroutine_run_time(coro: Awaitable[Any]) -> float:
     start_time = perf_counter()
