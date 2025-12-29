@@ -16,7 +16,7 @@ from bot.config import ADMIN_ID, RESPONCES_TIME_TASK_SEND_INTERVAL
 
 
 @tasks_broker.broker.task
-async def send_weather_to_user(start_seconds: int, user_id: int, context: Annotated[Context, TaskiqDepends()], bot: Bot = TaskiqDepends(), ):
+async def send_weather_to_user(start_seconds: float, user_id: int, context: Annotated[Context, TaskiqDepends()], bot: Bot = TaskiqDepends(), ):
     schedule_id = context.message.labels["schedule_id"]
 
     # now = datetime.now()
