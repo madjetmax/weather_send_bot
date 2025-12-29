@@ -30,7 +30,7 @@ taskiq_aiogram.init(
 )
 
 # define sources
-static_schedule_source = LabelScheduleSource(broker)
+# static_schedule_source = LabelScheduleSource(broker)
 
 dynamic_schedule_source = ListRedisScheduleSource(
     url=redis_url
@@ -39,7 +39,7 @@ dynamic_schedule_source = ListRedisScheduleSource(
 scheduler = TaskiqScheduler(
     broker=broker,
     sources=[
-        static_schedule_source,
+        # static_schedule_source,
         dynamic_schedule_source        
     ],
 )
