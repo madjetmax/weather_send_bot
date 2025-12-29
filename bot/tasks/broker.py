@@ -29,41 +29,56 @@ taskiq_aiogram.init(
     "bot.main:bot",
 )
 
-schedule_source = ListRedisScheduleSource(
+# define sources
+static_schedule_source = LabelScheduleSource(broker)
+
+dynamic_schedule_source = ListRedisScheduleSource(
     url=redis_url
 )
 
-scheduler = TaskiqScheduler(broker=broker, sources=[schedule_source])
+scheduler = TaskiqScheduler(
+    broker=broker,
+    sources=[
+        static_schedule_source,
+        dynamic_schedule_source        
+    ],
+)
 # ! run:  taskiq scheduler bot.tasks.broker:scheduler --skip-first-run
 
-static_tasks_scheduler = TaskiqScheduler(
-    broker=broker,
-    sources=[LabelScheduleSource(broker)],
-)
-# ! run:  taskiq scheduler bot.tasks.broker:static_tasks_scheduler --skip-first-run 
+# schedule_source = ListRedisScheduleSource(
+#     url=redis_url
+# )
+
+# scheduler = TaskiqScheduler(broker=broker, sources=[schedule_source])
+
+# static_tasks_scheduler = TaskiqScheduler(
+#     broker=broker,
+#     sources=[LabelScheduleSource(broker)],
+# )
+# # ! run:  taskiq scheduler bot.tasks.broker:static_tasks_scheduler --skip-first-run 
 
 
 async def delete_schedule(id_: str):
     print(id_)
-    await schedule_source.delete_schedule(id_)
+    await dynamic_schedule_source.delete_schedule(id_)
 
 async def delete_all_schedules():
-    schedules = await schedule_source.get_schedules()
+    schedules = await dynamic_schedule_source.get_schedules()
     for schedule in schedules:
         await delete_schedule(schedule.schedule_id)
 
 async def get_all_schedules_ids():
-    schedules = await schedule_source.get_schedules()
+    schedules = await dynamic_schedule_source.get_schedules()
     return [schd.schedule_id for schd in schedules]
 
 async def show_all_schedules():
-    schedules = await schedule_source.get_schedules()
+    schedules = await dynamic_schedule_source.get_schedules()
     for schedule in schedules:
         print(schedule)
 
 
 async def check_schedule(schedule_id: str) -> bool:
-    key = f"{schedule_source._prefix}:data:{schedule_id}"
+    key = f"{dynamic_schedule_source._prefix}:data:{schedule_id}"
     schedule = await redis_client.client.get(key)
     
     return schedule is not None

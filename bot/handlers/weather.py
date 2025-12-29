@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import bot.database as db
 from bot import tasks
-from bot.tasks.broker import schedule_source
+from bot.tasks.broker import dynamic_schedule_source
 
 from bot.states.weather import LocationSetState
 from bot.middlewares import weather as middlewares
@@ -99,7 +99,7 @@ async def get_user_location(message: Message, state: FSMContext, db_session: Asy
 
     # start schedule task to send user weather
     task = await tasks.send_weather_to_user.schedule_by_cron(
-        source=schedule_source,
+        source=dynamic_schedule_source,
         cron=f"*/{WEATHER_TASK_SEND_INTERVAL} * * * *",
         start_seconds=start_seconds,
         user_id=user_id
