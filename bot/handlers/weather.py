@@ -1,5 +1,5 @@
 from time import time
-from datetime import timedelta
+from datetime import datetime, timedelta, UTC
 
 from aiogram import Router
 from aiogram.types import Message, ContentType
@@ -81,7 +81,7 @@ async def get_user_location(message: Message, state: FSMContext, db_session: Asy
     }
 
     # set location to redis
-    expire_time = timedelta(hours=REDIS_USER_LOCATION_EXPIRE_TIME)
+    expire_time = REDIS_USER_LOCATION_EXPIRE_TIME
     await redis_client.set_data(
         f"{user_id}_location", update_data,
         expire_time
@@ -98,10 +98,9 @@ async def get_user_location(message: Message, state: FSMContext, db_session: Asy
     start_seconds = time()
 
     # start schedule task to send user weather
-    task = await tasks.send_weather_to_user.schedule_by_cron(
+    task = await tasks.send_weather_to_user.schedule_by_interval(
         source=dynamic_schedule_source,
-        # interval=WEATHER_TASK_SEND_INTERVAL*60,
-        cron=f"*/{WEATHER_TASK_SEND_INTERVAL} * * * *",
+        interval=WEATHER_TASK_SEND_INTERVAL,
         start_seconds=start_seconds,
         user_id=user_id
     )

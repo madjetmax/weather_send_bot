@@ -22,7 +22,7 @@ async def send_weather_to_user(start_seconds: float, user_id: int, context: Anno
     # now = datetime.now()
     # print("ran", now, context.message.labels)
 
-    text = f"{(time() - start_seconds) / 60}_{schedule_id}"
+    text = f"{(time() - start_seconds) / 60} {schedule_id}"
     await bot.send_message(user_id, text, disable_notification=True)
 
     # # get location data in redis

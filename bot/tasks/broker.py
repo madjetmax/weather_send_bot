@@ -2,7 +2,9 @@ from typing import Annotated
 import asyncio
 from datetime import datetime, timedelta
 
-from taskiq_redis import RedisAsyncResultBackend, RedisStreamBroker, ListRedisScheduleSource, RedisScheduleSource
+from taskiq_redis import (
+    RedisAsyncResultBackend, RedisStreamBroker, ListRedisScheduleSource, RedisScheduleSource, ListQueueBroker
+)
 from taskiq import TaskiqScheduler, Context, TaskiqDepends
 from taskiq.schedule_sources import LabelScheduleSource
 from redis.asyncio import Redis, BlockingConnectionPool
@@ -32,7 +34,7 @@ taskiq_aiogram.init(
 # define sources
 # static_schedule_source = LabelScheduleSource(broker)
 
-dynamic_schedule_source = ListRedisScheduleSource(
+dynamic_schedule_source = RedisScheduleSource(
     url=redis_url
 )
 
@@ -43,20 +45,7 @@ scheduler = TaskiqScheduler(
         dynamic_schedule_source        
     ],
 )
-# ! run:  taskiq scheduler bot.tasks.broker:scheduler --skip-first-run
-
-# schedule_source = ListRedisScheduleSource(
-#     url=redis_url
-# )
-
-# scheduler = TaskiqScheduler(broker=broker, sources=[schedule_source])
-
-# static_tasks_scheduler = TaskiqScheduler(
-#     broker=broker,
-#     sources=[LabelScheduleSource(broker)],
-# )
-# # ! run:  taskiq scheduler bot.tasks.broker:static_tasks_scheduler --skip-first-run 
-
+# ! run:  taskiq scheduler bot.tasks.broker:scheduler --skip-first-run --update-interval 5
 
 async def delete_schedule(id_: str):
     print(id_)

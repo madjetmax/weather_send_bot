@@ -31,7 +31,7 @@ services:
 
   taskiq-scheduler:
     build: .
-    command: taskiq scheduler bot.tasks.broker:scheduler --skip-first-run
+    command: taskiq scheduler bot.tasks.broker:scheduler --skip-first-run --update-interval 5
     depends_on:
       - redis
     environment:

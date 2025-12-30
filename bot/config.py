@@ -1,4 +1,6 @@
 from dotenv import load_dotenv
+from datetime import timedelta
+
 import os
 
 load_dotenv()
@@ -6,7 +8,7 @@ load_dotenv()
 # bot
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
-RESPONCES_TIME_TASK_SEND_INTERVAL = 5 # minutes
+RESPONCES_TIME_TASK_SEND_INTERVAL = timedelta(minutes=5)
 
 # weather api
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
@@ -28,7 +30,7 @@ REDIS_CLIENT_HOST = os.getenv("REDIS_CLIENT_HOST")
 REDIS_CLIENT_PORT = os.getenv("REDIS_CLIENT_PORT")
 REDIS_CLIENT_DB = os.getenv("REDIS_CLIENT_DB")
 
-REDIS_USER_LOCATION_EXPIRE_TIME = 1 # hours
+REDIS_USER_LOCATION_EXPIRE_TIME = timedelta(hours=1)
 
 # taskiq
-WEATHER_TASK_SEND_INTERVAL = 3 # minutes
+WEATHER_TASK_SEND_INTERVAL = timedelta(minutes=3)

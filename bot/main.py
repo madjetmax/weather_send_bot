@@ -29,6 +29,8 @@ async def main():
 
     # tasks
     await tasks_broker.broker.startup()
+    await tasks_broker.scheduler.startup()
+    await tasks_broker.dynamic_schedule_source.startup()
 
     await tasks_broker.show_all_schedules()
     # await tasks_broker.delete_all_schedules()
