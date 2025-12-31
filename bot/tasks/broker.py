@@ -9,6 +9,7 @@ from taskiq import TaskiqScheduler, Context, TaskiqDepends
 from taskiq.schedule_sources import LabelScheduleSource
 from redis.asyncio import Redis, BlockingConnectionPool
 import taskiq_aiogram
+from taskiq.events import TaskiqEvents
 
 from bot import redis_client
 
@@ -23,6 +24,8 @@ result_backend = RedisAsyncResultBackend(
 broker = RedisStreamBroker(
     url=redis_url,
 ).with_result_backend(result_backend)
+
+
 # ! run: taskiq worker bot.tasks.broker:broker
 
 taskiq_aiogram.init(
@@ -47,6 +50,23 @@ scheduler = TaskiqScheduler(
 )
 # ! run:  taskiq scheduler bot.tasks.broker:scheduler --skip-first-run --update-interval 5
 
+
+@broker.on_event(TaskiqEvents.WORKER_STARTUP)
+async def on_worker_startup():
+    r = Redis.from_url(redis_url)
+    try:
+        await r.xgroup_create(
+            name="taskiq",
+            groupname="taskiq",
+            id="$",
+            mkstream=True,
+        )
+    except Exception as e:
+        print(e)
+        if "BUSYGROUP" not in str(e):
+            raise
+
+# help funcs
 async def delete_schedule(id_: str):
     print(id_)
     await dynamic_schedule_source.delete_schedule(id_)
