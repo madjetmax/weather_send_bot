@@ -52,7 +52,7 @@ scheduler = TaskiqScheduler(
 
 
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
-async def on_worker_startup():
+async def on_worker_startup(context: Annotated[Context, TaskiqDepends()]):
     r = Redis.from_url(redis_url)
     try:
         await r.xgroup_create(
