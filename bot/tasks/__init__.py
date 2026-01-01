@@ -12,15 +12,12 @@ from bot import redis_client
 
 from bot.weather_parse import get_future_weather
 from bot import texts
-from bot.config import ADMIN_ID, RESPONCES_TIME_TASK_SEND_INTERVAL
+from bot.config import ADMIN_ID
 
 
 @tasks_broker.broker.task
-async def send_weather_to_user(start_seconds: float, user_id: int, context: Annotated[Context, TaskiqDepends()], bot: Bot = TaskiqDepends(), ):
+async def send_time_diff(start_seconds: float, user_id: int, context: Annotated[Context, TaskiqDepends()], bot: Bot = TaskiqDepends(), ):
     schedule_id = context.message.labels["schedule_id"]
-
-    # now = datetime.now()
-    # print("ran", now, context.message.labels)
 
     text = f"{(time() - start_seconds) / 60} {schedule_id}"
     await bot.send_message(user_id, text, disable_notification=True)

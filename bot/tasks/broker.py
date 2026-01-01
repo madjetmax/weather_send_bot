@@ -1,13 +1,10 @@
 from typing import Annotated
-import asyncio
-from datetime import datetime, timedelta
 
 from taskiq_redis import (
-    RedisAsyncResultBackend, RedisStreamBroker, ListRedisScheduleSource, RedisScheduleSource, ListQueueBroker
+    RedisAsyncResultBackend, RedisStreamBroker, RedisScheduleSource
 )
 from taskiq import TaskiqScheduler, Context, TaskiqDepends
-from taskiq.schedule_sources import LabelScheduleSource
-from redis.asyncio import Redis, BlockingConnectionPool
+from redis.asyncio import Redis
 import taskiq_aiogram
 from taskiq.events import TaskiqEvents
 
@@ -35,8 +32,6 @@ taskiq_aiogram.init(
 )
 
 # define sources
-# static_schedule_source = LabelScheduleSource(broker)
-
 dynamic_schedule_source = RedisScheduleSource(
     url=redis_url
 )
@@ -44,16 +39,17 @@ dynamic_schedule_source = RedisScheduleSource(
 scheduler = TaskiqScheduler(
     broker=broker,
     sources=[
-        # static_schedule_source,
         dynamic_schedule_source        
     ],
 )
 # ! run:  taskiq scheduler bot.tasks.broker:scheduler --skip-first-run --update-interval 5
 
 
+# * I also tried to fix error with this
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
 async def on_worker_startup(context: Annotated[Context, TaskiqDepends()]):
     r = Redis.from_url(redis_url)
+
     try:
         await r.xgroup_create(
             name="taskiq",
@@ -68,7 +64,6 @@ async def on_worker_startup(context: Annotated[Context, TaskiqDepends()]):
 
 # help funcs
 async def delete_schedule(id_: str):
-    print(id_)
     await dynamic_schedule_source.delete_schedule(id_)
 
 async def delete_all_schedules():

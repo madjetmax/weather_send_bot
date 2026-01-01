@@ -97,8 +97,7 @@ async def get_user_location(message: Message, state: FSMContext, db_session: Asy
 
     start_seconds = time()
 
-    # start schedule task to send user weather
-    task = await tasks.send_weather_to_user.schedule_by_interval(
+    task = await tasks.send_time_diff.schedule_by_interval(
         source=dynamic_schedule_source,
         interval=WEATHER_TASK_SEND_INTERVAL,
         start_seconds=start_seconds,
