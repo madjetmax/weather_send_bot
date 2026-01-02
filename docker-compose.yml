@@ -50,7 +50,7 @@ services:
       DB_NAME: weather_bot_db
       DB_USER: postgres
       DB_PASSWORD: root
-
+      
     volumes:
       - ./app:/bot
 
@@ -71,6 +71,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 2
+
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.org
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     pg:
+  #       condition: service_healthy
+
 
   redis:
     image: "redis:alpine"
