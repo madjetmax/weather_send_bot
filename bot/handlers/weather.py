@@ -104,6 +104,7 @@ async def get_user_location(message: Message, state: FSMContext, db_session: Asy
         user_id=user_id
     )
 
+
     # create or update user
     try:
         await db.create_user(
