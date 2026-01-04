@@ -82,10 +82,10 @@ async def get_user_location(message: Message, state: FSMContext, db_session: Asy
 
     # set location to redis
     expire_time = REDIS_USER_LOCATION_EXPIRE_TIME
-    await redis_client.set_data(
-        f"{user_id}_location", update_data,
-        expire_time
-    )
+    # await redis_client.set_data(
+    #     f"{user_id}_location", update_data,
+    #     expire_time
+    # )
 
     # send weather
     weather_data = await weather_parse.get_future_weather(

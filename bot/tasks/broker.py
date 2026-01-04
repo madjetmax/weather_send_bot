@@ -45,22 +45,22 @@ scheduler = TaskiqScheduler(
 # ! run:  taskiq scheduler bot.tasks.broker:scheduler --skip-first-run --update-interval 5
 
 
-# * I also tried to fix error with this
-@broker.on_event(TaskiqEvents.WORKER_STARTUP)
-async def on_worker_startup(context: Annotated[Context, TaskiqDepends()]):
-    r = Redis.from_url(redis_url)
+# # * I also tried to fix error with this
+# @broker.on_event(TaskiqEvents.WORKER_STARTUP)
+# async def on_worker_startup(context: Annotated[Context, TaskiqDepends()]):
+#     r = Redis.from_url(redis_url)
 
-    try:
-        await r.xgroup_create(
-            name="taskiq",
-            groupname="taskiq",
-            id="$",
-            mkstream=True,
-        )
-    except Exception as e:
-        print(e)
-        if "BUSYGROUP" not in str(e):
-            raise
+#     try:
+#         await r.xgroup_create(
+#             name="taskiq",
+#             groupname="taskiq",
+#             id="$",
+#             mkstream=True,
+#         )
+#     except Exception as e:
+#         print(e)
+#         if "BUSYGROUP" not in str(e):
+#             raise
 
 # help funcs
 async def delete_schedule(id_: str):
